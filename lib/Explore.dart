@@ -12,7 +12,7 @@ class ExploreScreen extends StatefulWidget {
 class _ExploreScreenState extends State<ExploreScreen> {
   int _currentIndex = 0;
 
-  final List<String> options = ['Opt 1', 'Opt 2', 'Opt 3', 'Opt 4'];
+  final List<String> options = ['Opt 1', 'Opt 2', 'Opt 3', 'Opt 4']; // Shorter option texts
 
   Widget buildOptionButton(String option) {
     return ElevatedButton(
@@ -20,7 +20,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
         // Handle option selection
       },
       style: ElevatedButton.styleFrom(
-        primary: Color(0xFFE0ECF4),
+        primary: Color(0xffcccbc8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
@@ -55,14 +55,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           '1/10',
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF365B6D)),
                         ),
                       ),
                     ),
                     SizedBox(height: 16),
                     Text(
-                      'Who is the smartest student in the class?',
-                      style: TextStyle(fontSize: 24, color: Color(0xFF365B6D), fontFamily: 'Cavet'),
+                      'Who is the smartest student in our class?',
+                      style: TextStyle(fontSize: 38, color: Color(0xFF365B6D), fontFamily: 'Cavet'),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 16),
@@ -83,6 +83,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             style: TextStyle(
                               color: Colors.black,
                               fontFamily: 'WaterLily',
+                              fontSize: 32,
                             ),
                           ),
                         ),
@@ -95,18 +96,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             style: TextStyle(
                               color: Colors.black,
                               fontFamily: 'WaterLily',
+                              fontSize: 32,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ],
-                ),
-              ),
-              Center(
-                child: Text(
-                  'trending chats here...',
-                  style: TextStyle(fontSize: 20),
                 ),
               ),
             ],
