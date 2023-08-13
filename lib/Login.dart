@@ -1,9 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:wtf01/HomeScreen.dart';
+import 'package:wtf01/resources/auth_methods.dart';
+import 'package:wtf01/screens/MainScreen.dart';
+import 'package:wtf01/utils/utils.dart';
 import 'Register.dart'; // Import the register screen file
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    super.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+  }
+
+  void loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethods().loginUser(
+        email: _emailController.text, password: _passwordController.text);
+    if (res == 'success') {
+      if (context.mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) =>MainScreen()
+            ),
+                (route) => false);
+
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      if (context.mounted) {
+        showSnackBar(context, res);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +88,14 @@ class LoginPage extends StatelessWidget {
                         child: Align(
                           alignment: Alignment.center,
                           child: TextField(
+                            controller: _emailController,
                             style: TextStyle(
                               color: Color(0xFF365b6d),
                               fontWeight: FontWeight.bold,
                               fontSize: 17.0,
                             ),
                             decoration: InputDecoration(
-                              hintText: 'USERNAME',
+                              hintText: 'Email',
                               hintStyle: TextStyle(
                                 color: Color(0xFF365b6d),
                                 fontWeight: FontWeight.bold,
@@ -69,6 +118,7 @@ class LoginPage extends StatelessWidget {
                         child: Align(
                           alignment: Alignment.center,
                           child: TextField(
+                            controller: _passwordController,
                             style: TextStyle(
                               color: Color(0xFF365b6d),
                               fontWeight: FontWeight.bold,
@@ -96,10 +146,7 @@ class LoginPage extends StatelessWidget {
                       height: 48,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => HomeScreen()),
-                          );
+                          loginUser();
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Color(0xff1AC3A9),

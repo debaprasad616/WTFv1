@@ -46,16 +46,6 @@ class _NotificationPageState extends State<NotificationPage> {
           );
         },
       ),
-      bottomNavigationBar: AppFooter(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          if (index == _currentIndex) return; // Does nothing if the same tab is tapped
-
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
     );
   }
 }

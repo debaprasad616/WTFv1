@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wtf01/Explore.dart';
 import 'package:wtf01/Notification.dart';
 import 'package:wtf01/Profile.dart';
+import 'package:wtf01/screens/MainScreen.dart';
 import 'dart:async';
 import 'HomeScreen.dart';
 import 'Login.dart';
@@ -30,15 +31,8 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Mulish_Regular',
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const SplashScreen(),
-        '/home': (context) => const HomeScreen(),
-        '/message': (context) => const MessageScreen(),
-        '/explore': (context) => const ExploreScreen(),
-        '/notification': (context) => NotificationPage(),
-        '/profile': (context) => const ProfileScreen(),
-      },
+      home: RegisterScreen(),
+
     );
   }
 }

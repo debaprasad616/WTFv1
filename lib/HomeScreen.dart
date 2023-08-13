@@ -147,16 +147,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: AppFooter(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          if (index == _currentIndex) return; // Doe snothing if the same tab is tapped
-
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
     );
   }
 }

@@ -110,16 +110,6 @@ class _MessageScreenState extends State<MessageScreen> {
           ),
         ),
 
-        bottomNavigationBar: AppFooter(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            if (index == _currentIndex) return;
-
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-        ),
       ),
     );
   }
