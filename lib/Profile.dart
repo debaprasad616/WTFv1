@@ -1,13 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:velocity_x/velocity_x.dart';
 import 'package:wtf01/Explore.dart';
 import 'package:wtf01/HomeScreen.dart';
+import 'package:wtf01/Login.dart';
 import 'package:wtf01/Message.dart';
 import 'package:wtf01/OwnProfile.dart';
+import 'package:wtf01/resources/auth_methods.dart';
+import 'package:wtf01/resources/firestore_methods.dart';
+import 'package:wtf01/utils/colors.dart';
+import 'package:wtf01/utils/utils.dart';
+import 'package:wtf01/widgets/follow_button.dart';
 
 import 'AppFooter.dart';
+import 'custom_widgets/CustomButton.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  final String uid;
+  const ProfileScreen({Key? key ,required this.uid}) : super(key: key);
+
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -15,6 +27,57 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   int _currentIndex = 0;
+  var userData = {};
+  int postLen = 0;
+  int followers = 0;
+  int following = 0;
+  bool isFollowing = false;
+  bool isLoading = false;
+
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  getData() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      var userSnap = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.uid)
+          .get();
+
+      // get post lENGTH
+      var postSnap = await FirebaseFirestore.instance
+          .collection('posts')
+          .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .get();
+
+      postLen = postSnap.docs.length;
+      userData = userSnap.data()!;
+      print(userData );
+      print("Data");
+      followers = userSnap.data()!['followers'].length;
+      following = userSnap.data()!['following'].length;
+      isFollowing = userSnap
+          .data()!['followers']
+          .contains(FirebaseAuth.instance.currentUser!.uid);
+      setState(() {});
+    } catch (e) {
+      showSnackBar(
+        context,
+        e.toString(),
+      );
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     CircleAvatar(
                       radius: 80,
                       // Replace 'profile_image.jpg' with the actual image path or URL
-                      backgroundImage: AssetImage('assets/profile_image.jpg'),
+                      backgroundColor: Colors.green,
                     ),
                     SizedBox(width: 16),
                     Row(
@@ -45,7 +108,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              '29', // Replace with the actual number of followers
+                              '${followers}', // Replace with the actual number of followers
                                 style: TextStyle(fontSize: 58,fontFamily: 'WaterLily',color: Color(0xFF365B6D)) //,
                             ),
                             SizedBox(height: 8),
@@ -60,7 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              '17', // Replace with the actual number of following
+                              '${following}', // Replace with the actual number of following
                                 style: TextStyle(fontSize: 58,fontFamily: 'WaterLily',color: Color(0xFF365B6D)) //,
                             ),
                             SizedBox(height: 8),
@@ -83,65 +146,147 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Username',
+                      '${userData['username']}',
                       style: TextStyle(fontSize: 38,fontFamily: 'cavet',fontWeight: FontWeight.bold,color: Color(0xFF365B6D)),
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Name', // Replace with the actual name
+                    '${userData['name']}', // Replace with the actual name
                       style: TextStyle(fontSize: 38,fontFamily: 'WaterLily',color: Color(0xFF365B6D)) //,
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'Bio in three sentance write anything about yourself and your business this will help you to communicate easily and make things easier......', // Replace with the actual bio
+                      '${userData['bio']}'+'ok', // Replace with the actual bio
                       style: TextStyle(fontSize: 25,fontFamily: 'cavet',fontWeight: FontWeight.bold,color: Color(0xFF365B6D)),
                     ),
                     SizedBox(height: 16),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    //   children: [
+                    //     ElevatedButton(
+                    //       onPressed: () {
+                    //         // Implement follow button action here
+                    //       },
+                    //       style: ElevatedButton.styleFrom(
+                    //         primary: Color(0xff1AC3A9),
+                    //         shape: RoundedRectangleBorder(
+                    //           borderRadius: BorderRadius.circular(8.0),
+                    //         ),
+                    //         elevation: 0,
+                    //         fixedSize: Size.fromHeight(48),
+                    //       ),
+                    //       child: Text(
+                    //         'Follow',
+                    //         style: TextStyle(
+                    //           color: Color(0xfff2f1ec),
+                    //           fontWeight: FontWeight.bold,
+                    //           fontSize: 19.0,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //     ElevatedButton(
+                    //       onPressed: () {
+                    //         // Implement message button action here
+                    //       },
+                    //       style: ElevatedButton.styleFrom(
+                    //         primary: Color(0xff1AC3A9),
+                    //         shape: RoundedRectangleBorder(
+                    //           borderRadius: BorderRadius.circular(8.0),
+                    //         ),
+                    //         elevation: 0,
+                    //         fixedSize: Size.fromHeight(48),
+                    //       ),
+                    //       child: Text(
+                    //         'Message',
+                    //         style: TextStyle(
+                    //           color: Color(0xfff2f1ec),
+                    //           fontWeight: FontWeight.bold,
+                    //           fontSize: 19.0,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment:
+                      MainAxisAlignment.spaceEvenly,
                       children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            // Implement follow button action here
+                        FirebaseAuth.instance.currentUser!.uid == widget.uid
+                            ?
+                        CustomButton(
+                          text: 'Sign Out',
+
+                          onPress: () async {
+                            await AuthMethods().signOut();
+                            if (context.mounted) {
+                              Navigator.of(context)
+                                  .pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                  const LoginPage(),
+                                ),
+                              );
+                            }
                           },
-                          style: ElevatedButton.styleFrom(
-                            primary: Color(0xff1AC3A9),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            elevation: 0,
-                            fixedSize: Size.fromHeight(48),
-                          ),
-                          child: Text(
-                            'Follow',
-                            style: TextStyle(
-                              color: Color(0xfff2f1ec),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 19.0,
-                            ),
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Implement message button action here
+                        ).box.width(context.screenWidth*.9).make(): isFollowing
+                            ?
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            CustomButton(
+                              text: 'Unfollow',
+
+                              onPress: () async {
+                                await FireStoreMethods()
+                                    .followUser(
+                                  FirebaseAuth.instance
+                                      .currentUser!.uid,
+                                  userData['uid'],
+                                );
+
+                                setState(() {
+                                  isFollowing = false;
+                                  followers--;
+                                });
+                              },
+                            ).box.width(context.screenWidth*.4).make(),
+                            CustomButton(
+                              text: 'Message',
+
+                              onPress: () async {
+                                await FireStoreMethods()
+                                    .followUser(
+                                  FirebaseAuth.instance
+                                      .currentUser!.uid,
+                                  userData['uid'],
+                                );
+
+                                setState(() {
+                                  isFollowing = false;
+                                  followers--;
+                                });
+                              },
+                            ).box.width(context.screenWidth*.4).make(),
+                          ],
+                        ).box.width(context.screenWidth*.9).make()
+                            :
+                        CustomButton(
+                          text: 'Follow',
+
+                          onPress: () async {
+                            await FireStoreMethods()
+                                .followUser(
+                              FirebaseAuth.instance
+                                  .currentUser!.uid,
+                              userData['uid'],
+                            );
+
+                            setState(() {
+                              isFollowing = true;
+                              followers++;
+                            });
                           },
-                          style: ElevatedButton.styleFrom(
-                            primary: Color(0xff1AC3A9),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            elevation: 0,
-                            fixedSize: Size.fromHeight(48),
-                          ),
-                          child: Text(
-                            'Message',
-                            style: TextStyle(
-                              color: Color(0xfff2f1ec),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 19.0,
-                            ),
-                          ),
-                        ),
+                        ).box.width(context.screenWidth*.9).make(),
                       ],
                     ),
 
@@ -151,55 +296,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 8),
-                    Container(
-                      height: 100,
-                      // Replace the child with a list of achievements
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 5, // Replace with the actual number of achievements
-                        itemExtent: 80, // Set the extent to adjust the size of each card
-                        itemBuilder: (context, index) {
-                          // Replace this with your achievement card widget
-                          return Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8), // Add space between cards
-                            child: CircleAvatar(
-                              radius: 40, // Make the CircleAvatar smaller
-                              backgroundColor: Colors.grey,
-                              child: Text('Achievement ${index + 1}', textAlign: TextAlign.center),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
 
                     SizedBox(height: 16),
-                    Text(
-                      'Posts', // Replace with the actual posts
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 8),
-                    // Replace the child with a list of post cards
-                    // You can use ListView.builder to build the list of post cards
-                    // Example:
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2, // Adjust the number of columns here (2 for 2 columns)
-                        crossAxisSpacing: 8, // Adjust the spacing between columns
-                        mainAxisSpacing: 8, // Adjust the spacing between rows
-                      ),
-                      itemCount: 5, // Replace with the actual number of posts
-                      itemBuilder: (context, index) {
-                        // Replace this with your post card widget
-                        return Card(
-                          child: Container(
-                            padding: EdgeInsets.all(16),
-                            child: Text('Post ${index + 1}'),
-                          ),
-                        );
-                      },
-                    ),
+
 
                   ],
                 ),
@@ -207,35 +306,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: AppFooter(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          if (index == _currentIndex) return; // Do nothing if the same tab is tapped
-
-          setState(() {
-            _currentIndex = index;
-          });
-
-          // Add any navigation or other functionality based on the tapped index here
-          switch (index) {
-            case 0:
-              Navigator.pushReplacementNamed(context, '/home');
-              break;
-            case 1:
-              Navigator.pushNamed(context, '/message');
-              break;
-            case 2:
-              Navigator.pushNamed(context, '/explore');
-              break;
-            case 3:
-              Navigator.pushNamed(context, '/notification');
-              break;
-            case 4:
-              Navigator.pushNamed(context, '/profile');
-              break;
-          }
-        },
       ),
     );
   }
