@@ -35,7 +35,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   final List<String> options = ['Opt 1', 'Opt 2', 'Opt 3', 'Opt 4']; // Shorter option texts
 
   Widget buildOptionButton(String option) {
-    signupUser();
+
     return ElevatedButton(
       onPressed: () {
         // Handle option selection
